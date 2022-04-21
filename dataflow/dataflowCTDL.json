@@ -6,16 +6,16 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "datasetsql",
+						"referenceName": "dataset_csv",
 						"type": "DatasetReference"
 					},
-					"name": "sql"
+					"name": "storage"
 				}
 			],
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "dataset_csv",
+						"referenceName": "datasetsql",
 						"type": "DatasetReference"
 					},
 					"name": "sink1"
@@ -28,33 +28,37 @@
 			],
 			"scriptLines": [
 				"source(output(",
-				"          {first name} as string,",
-				"          {last name} as string,",
-				"          {E.mail} as string,",
-				"          phone as string",
-				"     ),",
-				"     allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> sql",
-				"sql filter(!isNull(UserName)) ~> filter1",
-				"filter1 sink(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     input(",
 				"          UserName as string,",
 				"          Gender as string,",
 				"          Phone as string,",
 				"          Email as string,",
 				"          CreditCard as string",
 				"     ),",
-				"     umask: 0022,",
-				"     preCommands: [],",
-				"     postCommands: [],",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> storage",
+				"storage filter(!isNull(UserName)) ~> filter1",
+				"filter1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          {first name} as string,",
+				"          {last name} as string,",
+				"          {E.mail} as string,",
+				"          phone as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
 				"     mapColumn(",
 				"          Phone = phone",
-				"     )) ~> sink1"
+				"     ),",
+				"     preCommands: [],",
+				"     postCommands: []) ~> sink1"
 			]
 		}
 	}
