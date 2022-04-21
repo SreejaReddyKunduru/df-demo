@@ -18,7 +18,7 @@
 						"referenceName": "dataset_csv",
 						"type": "DatasetReference"
 					},
-					"name": "storage"
+					"name": "sink1"
 				}
 			],
 			"transformations": [
@@ -27,11 +27,17 @@
 				}
 			],
 			"scriptLines": [
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          {first name} as string,",
+				"          {last name} as string,",
+				"          {E.mail} as string,",
+				"          phone as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> sql",
-				"sql filter(ERROR_FUNCTION('')) ~> filter1",
+				"sql filter(!isNull(UserName)) ~> filter1",
 				"filter1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
@@ -45,7 +51,10 @@
 				"     preCommands: [],",
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> storage"
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          Phone = phone",
+				"     )) ~> sink1"
 			]
 		}
 	}

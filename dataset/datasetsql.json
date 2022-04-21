@@ -7,7 +7,24 @@
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",
-		"schema": [],
+		"schema": [
+			{
+				"name": "first name",
+				"type": "nvarchar"
+			},
+			{
+				"name": "last name",
+				"type": "nvarchar"
+			},
+			{
+				"name": "E.mail",
+				"type": "nvarchar"
+			},
+			{
+				"name": "phone",
+				"type": "nvarchar"
+			}
+		],
 		"typeProperties": {
 			"schema": "dbo",
 			"table": "persons"
