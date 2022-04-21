@@ -23,9 +23,6 @@
 			],
 			"transformations": [
 				{
-					"name": "filter1"
-				},
-				{
 					"name": "derivedColumn1"
 				}
 			],
@@ -40,8 +37,7 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> storage",
-				"storage filter(!isNull(UserName)) ~> filter1",
-				"filter1 derive(UserName = 'test') ~> derivedColumn1",
+				"storage derive(UserName = 'test') ~> derivedColumn1",
 				"derivedColumn1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
