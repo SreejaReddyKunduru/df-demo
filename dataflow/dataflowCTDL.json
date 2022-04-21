@@ -6,7 +6,7 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "datasetsql",
+						"referenceName": "dataset_csv",
 						"type": "DatasetReference"
 					},
 					"name": "storage"
@@ -15,7 +15,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "dataset_csv",
+						"referenceName": "datasetsql",
 						"type": "DatasetReference"
 					},
 					"name": "sink1"
@@ -24,34 +24,42 @@
 			"transformations": [
 				{
 					"name": "derivedColumn1"
+				},
+				{
+					"name": "filter1"
 				}
 			],
 			"scriptLines": [
 				"source(output(",
-				"          {first name} as string,",
-				"          {last name} as string,",
-				"          {E.mail} as string,",
-				"          phone as string",
-				"     ),",
-				"     allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     isolationLevel: 'READ_UNCOMMITTED',",
-				"     format: 'table') ~> storage",
-				"storage derive(UserName = 'test') ~> derivedColumn1",
-				"derivedColumn1 sink(allowSchemaDrift: true,",
-				"     validateSchema: false,",
-				"     input(",
 				"          UserName as string,",
 				"          Gender as string,",
 				"          Phone as string,",
 				"          Email as string,",
 				"          CreditCard as string",
 				"     ),",
-				"     umask: 0022,",
-				"     preCommands: [],",
-				"     postCommands: [],",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> storage",
+				"filter1 derive(UserName = 'test') ~> derivedColumn1",
+				"storage filter(isNull({first name})) ~> filter1",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          {first name} as string,",
+				"          {last name} as string,",
+				"          {E.mail} as string,",
+				"          phone as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sink1"
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     preCommands: [],",
+				"     postCommands: []) ~> sink1"
 			]
 		}
 	}
